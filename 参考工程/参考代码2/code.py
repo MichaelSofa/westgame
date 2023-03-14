@@ -1,7 +1,6 @@
 import os
 import cv2 as cv
 
-
 class BattleClass:
     def __init__(self):
         self.skip_number = 0;  # 战斗状态下没有达到判定条件跳过的帧数

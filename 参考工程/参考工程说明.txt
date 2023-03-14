@@ -6,9 +6,11 @@
 	
 	参考代码2：
 		CPP版本检测进入战斗代码
+		new: 添加了Python版本
 
 	参考工程3：
 		CPP版本调用paddleOCR识别文字的代码
+		new: 改为Python版本，删除了原来的CPP版本
 
 持国部分参考
 	参考工程1：
