@@ -3,11 +3,11 @@ import cv2 as cv
 
 class BattleClass:
     def __init__(self):
-        self.skip_number = 0;  # 战斗状态下没有达到判定条件跳过的帧数
-        self.skip_number_thresh = 10;  # 跳过的帧数大于这个阈值就变为非战斗状态
-        self.remain_number = 0;  # 非战斗状态下达到判定条件保持的帧数
-        self.remain_number_thresh = 3;  # 保持的帧数大于这个阈值就变为战斗状态
-        self.condition_flag = False;  # 状态指示，现在是战斗状态为True，非战斗状态为False
+        self.skip_number = 0  # 战斗状态下没有达到判定条件跳过的帧数
+        self.skip_number_thresh = 10  # 跳过的帧数大于这个阈值就变为非战斗状态
+        self.remain_number = 0  # 非战斗状态下达到判定条件保持的帧数
+        self.remain_number_thresh = 3  # 保持的帧数大于这个阈值就变为战斗状态
+        self.condition_flag = False  # 状态指示，现在是战斗状态为True，非战斗状态为False
         self.bar_vector = list()
     
     def init_bar_vector(self, bar_dir):
