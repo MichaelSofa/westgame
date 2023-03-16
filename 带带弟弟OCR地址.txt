@@ -1,0 +1,3 @@
+带带弟弟OCR 训练工程地址 https://github.com/sml2h3/dddd_trainer
+
+部署参考工程 地址 https://github.com/sml2h3/ddddocr
