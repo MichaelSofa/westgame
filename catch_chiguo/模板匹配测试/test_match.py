@@ -24,18 +24,18 @@ def get_coor(image, template, value):
             return (left_top, right_bottom)
             
 
-
-image = cv2.imread('7.png')
-template = cv2.imread('1_cut2.png', 0)
-t1 = time.time()
-(left_top, right_bottom) = get_coor(image, template, 0.9)
-t2 = time.time()
-print(left_top)
-print(right_bottom)
-print("spend time: ", t2 - t1)
-cv2.rectangle(image, np.array(left_top).astype(np.int32), np.array(right_bottom).astype(np.int32), (0, 0, 255), 2)
-cv2.imshow('show', image)
-cv2.waitKey()
-cv2.destroyAllWindows()
+if __name__ == "__main__":
+    image = cv2.imread('7.png')
+    template = cv2.imread('1_cut2.png', 0)
+    t1 = time.time()
+    (left_top, right_bottom) = get_coor(image, template, 0.9)
+    t2 = time.time()
+    print(left_top)
+    print(right_bottom)
+    print("spend time: ", t2 - t1)
+    cv2.rectangle(image, np.array(left_top).astype(np.int32), np.array(right_bottom).astype(np.int32), (0, 0, 255), 2)
+    cv2.imshow('show', image)
+    cv2.waitKey()
+    cv2.destroyAllWindows()
 
 
