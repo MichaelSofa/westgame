@@ -1,0 +1,20 @@
+通用参考
+	参考工程1：
+		未验证的Python版本检测进入战斗代码
+		Python版本KMClass调用鼠标操作的代码
+		Python版本检测正在运行的梦幻西游游戏窗口并截取图像的代码
+	
+	参考代码2：
+		CPP版本检测进入战斗代码
+		new: 添加了Python版本
+
+	参考工程3：
+		CPP版本调用paddleOCR识别文字的代码
+		new: 改为Python版本，删除了原来的CPP版本
+
+持国部分参考
+	参考工程1：
+		未验证的Python版本场景验证的代码，利用TensorFlow2.1.0实现。
+
+	参考工程4：
+		Python版本调用OpenCV利用YOLO v7对持国进行目标检测的工程

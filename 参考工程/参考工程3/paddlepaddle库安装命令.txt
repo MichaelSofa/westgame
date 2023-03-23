@@ -1,0 +1,1 @@
+pip install paddlepaddle -i https://mirror.baidu.com/pypi/simple/
