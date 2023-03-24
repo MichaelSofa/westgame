@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5 import QtGui
 import numpy as np
 from matplotlib import pyplot as plt
+# import pydirectinput
 
 # 全局变量
 hwnd_title = dict()
@@ -41,8 +42,8 @@ def qimage2numpy(qimage, dtype='array'):
     size = qimage.size()
     # buf = qimage.bits().asstring(qimage.numBytes())
     buf = qimage.bits().asstring(size.width() * size.height() * qimage.depth() // 8)
-    print(dtype)
-    print(temp_shape)
+    # print(dtype)
+    # print(temp_shape)
     result = np.frombuffer(buf, dtype).reshape(temp_shape)
     
     if result_shape != temp_shape:
@@ -80,7 +81,7 @@ def shot():
             img_sc = screen.grabWindow(hwnd).toImage()
             #img_desk.save('./image_desk.png')
             # img_sc.save('./image_screen.png')
-            print(type(img_sc))
+            # print(type(img_sc))
             image_numpy = qimage2numpy(img_sc)
 
     if mhxy_title == '':
@@ -94,10 +95,13 @@ if __name__ == "__main__":
     cv.namedWindow('show', cv.WINDOW_NORMAL)
     while True:
         result = shot()
+        # position = pydirectinput.position()
         if result is not None:
             np_image, left, top, right, bottom = result
-            print('left, top, right, bottom: ', left, top, right, bottom)
-            cv.imshow("show", np_image)
+            # new_np_image = cv.rectangle(np_image.copy(), (int(position[0]-left), int(position[1]-top)), (int(position[0]-left+5), int(position[1]-top+5)), (0, 0, 255), 2)
+            new_np_image = np_image.copy()
+            # print('left, top, right, bottom: ', left, top, right, bottom)
+            cv.imshow("show", new_np_image)
             key = cv.waitKey(1)
             if key & 0xFF == 27 or key & 0xFF == ord('Q') or key & 0xFF == ord('q'):
                 break

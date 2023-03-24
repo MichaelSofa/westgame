@@ -12,7 +12,7 @@ def get_coor(image, template, value):
             img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         else:
             img_gray = image
-        w, h = template.shape[::-1]
+        h, w = template.shape[0:2]
         res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
         threshold = value
         loc = np.where(res >= threshold)
