@@ -86,7 +86,7 @@ def move_and_click_in_game(x, y):  # 加入随机算法而不是直接直线移�
     else:
         x_dist = x - mouse_result[0]
         y_dist = y - mouse_result[1]
-        print("initial x_dist, y_dist: {} {}".format(x_dist, y_dist))
+        # print("initial x_dist, y_dist: {} {}".format(x_dist, y_dist))
         for i in range(1, step+1):  # 制造移动轨迹的随机性
             random_number1 = random.random()
             random_number2 = random.random()
@@ -96,10 +96,10 @@ def move_and_click_in_game(x, y):  # 加入随机算法而不是直接直线移�
             #this_move_y = int(y_dist*0.5*random.random())
             this_move_x = int(x_dist*random_number_x)
             this_move_y = int(y_dist*random_number_y)
-            pydirectinput.moveRel(this_move_x, this_move_y, duration=random.random()/step, relative=True)
+            pydirectinput.moveRel(this_move_x, this_move_y, duration=random.random()/step) #, relative=True)
             x_dist = x_dist - this_move_x
             y_dist = y_dist - this_move_y
-            print("x_dist, y_dist: {} {}".format(x_dist, y_dist))
+            # print("x_dist, y_dist: {} {}".format(x_dist, y_dist))
         
         # 开始点击
         result = shot()
@@ -114,7 +114,7 @@ def move_and_click_in_game(x, y):  # 加入随机算法而不是直接直线移�
         else:
             time.sleep(random.random()/3)
             # move_rel_and_click(x-mouse_result[0], y-mouse_result[1])
-            pydirectinput.moveRel(x-mouse_result[0], y-mouse_result[1], duration=random.random()/3, relative=True)
+            pydirectinput.moveRel(x-mouse_result[0], y-mouse_result[1], duration=random.random()/3) #, relative=True)
             time.sleep(random.random()/5)
             pydirectinput.click()
             return True
@@ -128,6 +128,8 @@ def move_close_to(x, y):  # 加入随机算法的将鼠标移动靠近目标
         print("not find game picture! 1")
         return False
     x_mouse, y_mouse = pydirectinput.position()
+    x_mouse = x_mouse - left
+    y_mouse = y_mouse - top
     x_dist = x - x_mouse
     y_dist = y - y_mouse
     # print("initial x_dist, y_dist: {} {}".format(x_dist, y_dist))
@@ -140,10 +142,13 @@ def move_close_to(x, y):  # 加入随机算法的将鼠标移动靠近目标
         #this_move_y = int(y_dist*0.5*random.random())
         this_move_x = int(x_dist*random_number_x)
         this_move_y = int(y_dist*random_number_y)
-        pydirectinput.moveRel(this_move_x, this_move_y, duration=random.random()/step, relative=True)
+        pydirectinput.moveRel(this_move_x, this_move_y, duration=random.random()/step) #, relative=True)
         x_dist = x_dist - this_move_x
         y_dist = y_dist - this_move_y
+        # x_test, y_test = pydirectinput.position()
         # print("x_dist, y_dist: {} {}".format(x_dist, y_dist))
+        # print("x_test, y_test: {} {}".format(x_test, y_test))
+        
     return True
 
 
@@ -172,7 +177,8 @@ if __name__ == '__main__' :
     time.sleep(2)
     print(pydirectinput.position())
     '''
-    excute_flag = move_and_click_in_game(1600, 300)
+    # excute_flag = move_and_click_in_game(1600, 300)
+    excute_flag = move_close_to(200, 200)
     print("excute_flag: ", excute_flag)
         
     
