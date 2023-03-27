@@ -35,6 +35,7 @@ def find_mouse_in_desktop(img, template):
         return (left_top, right_bottom)
 '''
 
+
 def find_mouse_in_game(img, template):
     # h, w = template.shape[0:2]
     threshold = 0.85
@@ -70,9 +71,10 @@ def move_rel_and_click(x, y):
     # pyautogui.click()
     pydirectinput.click()
 """
-    
+
+
 def move_and_click_in_game(x, y):  # 加入随机算法而不是直接直线移动
-    step = 10
+    step = 5
     result = shot()
     if result is not None:
         img, left, top, right, bottom = result
@@ -118,6 +120,7 @@ def move_and_click_in_game(x, y):  # 加入随机算法而不是直接直线移�
             time.sleep(random.random()/5)
             pydirectinput.click()
             return True
+
 
 def move_close_to(x, y):  # 加入随机算法的将鼠标移动靠近目标
     step = 10

@@ -1,6 +1,9 @@
 import os
 import cv2 as cv
 
+my_bar_dir = './right_side_bar_template'
+
+
 class BattleClass:
     def __init__(self):
         self.skip_number = 0  # 战斗状态下没有达到判定条件跳过的帧数
@@ -10,7 +13,7 @@ class BattleClass:
         self.condition_flag = False  # 状态指示，现在是战斗状态为True，非战斗状态为False
         self.bar_vector = list()
     
-    def init_bar_vector(self, bar_dir):
+    def init_bar_vector(self, bar_dir=my_bar_dir):
         # 初始化条状图加载
         if len(self.bar_vector) == 5:
             return True

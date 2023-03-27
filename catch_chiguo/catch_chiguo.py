@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 import os
+import random
 from match_template_func import get_coor
 from keymouse import move_close_to
 from keymouse import move_and_click_in_game
@@ -18,6 +19,7 @@ classThreshold = 0.5
 nmsThreshold = 0.45
 nmsScoreThreshold = boxThreshold * classThreshold
 
+net_path = "./model/chiguo.onnx"
 yolo_labels = ['chiguo']
 netAnchors = [[10, 13, 16, 30, 33, 23], [30, 61, 62, 45, 59, 119 ], [116, 90, 156, 198, 373, 326]]
 netStride = [8.0, 16.0, 32.0, 64.0]
@@ -45,8 +47,7 @@ def load_catch_and_run_template():
 
 def net_load():
     global net
-    net = cv.dnn.readNet('chiguo.onnx')
-    net = cv.dnn.readNet('chiguo.onnx')
+    net = cv.dnn.readNet(net_path)
     net.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
     net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA_FP16)
     # net.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA)
@@ -137,10 +138,10 @@ def process_one_battle_frame(image):
             left_top, right_bottom = result
             center_x = int((left_top[0] + right_bottom[0])/2)
             center_y = int((left_top[1] + right_bottom[1])/2)
-            move_close_to(center_x, center_y)
-            move_and_click_in_game(center_x, center_y)
-            move_close_to(out_centers[0][0], out_centers[0][1])
-            move_and_click_in_game(out_centers[0][0], out_centers[0][1])
+            move_close_to(center_x+random.randint(-3, 3), center_y+random.randint(-3, 3))
+            move_and_click_in_game(center_x+random.randint(-3, 3), center_y+random.randint(-3, 3))
+            move_close_to(out_centers[0][0]+random.randint(-5, 5), out_centers[0][1]+random.randint(-5, 5))
+            move_and_click_in_game(out_centers[0][0]+random.randint(-5, 5), out_centers[0][1]+random.randint(-5, 5))
 
     else:
         result = find_button(image, template_run_list)
@@ -148,8 +149,8 @@ def process_one_battle_frame(image):
             left_top, right_bottom = result
             center_x = int((left_top[0] + right_bottom[0])/2)
             center_y = int((left_top[1] + right_bottom[1])/2)
-            move_close_to(center_x, center_y)
-            move_and_click_in_game(center_x, center_y)
+            move_close_to(center_x+random.randint(-3, 3), center_y+random.randint(-3, 3))
+            move_and_click_in_game(center_x+random.randint(-3, 3), center_y+random.randint(-3, 3))
 
 
 if __name__ == "__main__":

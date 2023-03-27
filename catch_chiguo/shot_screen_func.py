@@ -59,9 +59,6 @@ def get_all_hwnd(hwnd,mouse):
         hwnd_title.update({hwnd:win32gui.GetWindowText(hwnd)})
         
 
-
-
-
 def shot():
     hwnd_title.clear()
     win32gui.EnumWindows(get_all_hwnd, 0)
@@ -88,7 +85,6 @@ def shot():
         print('mhxy not start')
         return None
     return image_numpy, left, top, right, bottom
-
 
 
 if __name__ == "__main__":
