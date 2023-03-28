@@ -38,7 +38,7 @@ def find_mouse_in_desktop(img, template):
 
 def find_mouse_in_game(img, template):
     # h, w = template.shape[0:2]
-    threshold = 0.85
+    threshold = 0.8
     res = cv.matchTemplate(img, template, cv.TM_CCOEFF_NORMED)
     loc = np.where(res >= threshold)
     min_val, max_val, min_loc, max_loc = cv.minMaxLoc(res)
@@ -74,7 +74,7 @@ def move_rel_and_click(x, y):
 
 
 def move_and_click_in_game(x, y):  # 加入随机算法而不是直接直线移动
-    step = 5
+    step = 3
     result = shot()
     if result is not None:
         img, left, top, right, bottom = result
@@ -123,7 +123,7 @@ def move_and_click_in_game(x, y):  # 加入随机算法而不是直接直线移�
 
 
 def move_close_to(x, y):  # 加入随机算法的将鼠标移动靠近目标
-    step = 10
+    step = 5
     result = shot()
     if result is not None:
         img, left, top, right, bottom = result
@@ -151,8 +151,14 @@ def move_close_to(x, y):  # 加入随机算法的将鼠标移动靠近目标
         # x_test, y_test = pydirectinput.position()
         # print("x_dist, y_dist: {} {}".format(x_dist, y_dist))
         # print("x_test, y_test: {} {}".format(x_test, y_test))
-        
     return True
+
+
+def do_mouse_action(x, y):  # 以上两个函数的合并
+    flag1 = move_close_to(x, y)
+    flag2 = move_and_click_in_game(x, y)
+    ret_flag = flag1 and flag2
+    return ret_flag
 
 
 if __name__ == '__main__' : 

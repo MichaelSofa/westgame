@@ -42,11 +42,11 @@ def auto_guide(image):
             red_left_top, red_right_bottom = result_red_pot
             if goal_index == 0:
                 dist = calc_dist(red_left_top, real_goal_pt1)
-                if dist < 12:
+                if dist < 50:
                     goal_index = 1
             elif goal_index == 1:
                 dist = calc_dist(red_left_top, real_goal_pt2)
-                if dist < 12:
+                if dist < 50:
                     goal_index = 0
 
             if goal_index == 0:
