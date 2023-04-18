@@ -1,21 +1,29 @@
-import tensorflow as tf
-from tensorflow import keras
+import torch
+from torchvision import transforms
+from PIL import Image
 import numpy as np
 import cv2 as cv
 import os
 import random
 
+from model_v3 import mobilenet_v3_large
 from match_template_func import get_coor
-from keymouse import move_and_click_in_game, move_close_to
+from keymouse import move_and_click_in_game, move_close_to, do_mouse_action
+from shot_screen_func import shot
 
 model = None
-IMG_HEIGHT = 100
-IMG_WIDTH = 100
 
 popup_path = './popup'
-model_path = './model/mhxy.h5'
+model_path = './model/MobileNetV3.pth'
 template_popup_list = []
+device = torch.device("cpu")
+global_pic_number = 0
 
+data_transform = transforms.Compose(
+        [transforms.Resize(256),
+         transforms.CenterCrop(224),
+         transforms.ToTensor(),
+         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
 
 def load_popup_template():
     template_popup_list.clear()
@@ -28,79 +36,85 @@ def load_popup_template():
 
 def model_load():
     global model
-    model = keras.models.load_model(model_path)
-    model.summary()
+    # create model
+    model = mobilenet_v3_large(num_classes=2).to(device)
+    # load model weights
+    model.load_state_dict(torch.load(model_path, map_location=device))
+    model.eval()
 
 
-def preprocess_image(image):  # 输入numpy图像
-    image = tf.convert_to_tensor(image, dtype=tf.float32)
-    image = tf.image.resize(image, [IMG_WIDTH, IMG_HEIGHT])
-    image /= 255.0  # normalize to [0,1] range
-    return image
-
-
-def model_predict(image1, image2, image3, image4):
+def jiance(np_img):
     global model
-    image1 = preprocess_image(image1)
-    image2 = preprocess_image(image2)
-    image3 = preprocess_image(image3)
-    image4 = preprocess_image(image4)
-    imgs = [image1, image2, image3, image4]
-    imgs =  tf.convert_to_tensor(imgs)
-    predictions = model.predict(imgs)
-    predictions = [row[0] for row in predictions]
-    print(predictions)
-    min_index = predictions.index(min(predictions))
-    print(f' 预测结果为 第 > {min_index + 1} < 张图片')
-    return min_index
-
-
+    img = Image.fromarray(np_img) 
+    img = data_transform(img)
+    # expand batch dimension
+    img = torch.unsqueeze(img, dim=0)
+    with torch.no_grad():
+        # predict class
+        output = torch.squeeze(model(img.to(device))).cpu()
+        predict = torch.softmax(output, dim=0)
+        predict_cla = torch.argmax(predict).numpy()
+    confidence1 = predict[0].numpy()
+    confidence2 = predict[1].numpy()
+    return confidence1/confidence2
+    
+    
 def detect_verification_point(image):
     result = None
-    for i in range(len(template_popup_list)):
-        template = template_popup_list[i]
-        result = get_coor(image, template, 0.8)
+    for image1 in template_popup_list:
+        result = get_coor(image, image1, 0.8)
         if result is not None:
             break
     if result is not None:
-        left_top, right_bottom = result
-        window_left = left_top[0] - 85
-        window_top = left_top[1] - 8
-        x1 = window_left
-        x2 = window_left + 90
-        x3 = x2 + 90
-        x4 = x3 + 90
-        x5 = x4 + 90
-        image1 = image[window_top + 40: window_top + 167, x1:x2 + 1]
-        image2 = image[window_top + 40: window_top + 167, x2:x3 + 1]
-        image3 = image[window_top + 40: window_top + 167, x3:x4 + 1]
-        image4 = image[window_top + 40: window_top + 167, x4:x5 + 1]
-        min_index = model_predict(image1, image2, image3, image4)
-        if min_index == 0:
-            return x1 + 45, window_top + 100
-        elif min_index == 1:
-            return x2 + 45, window_top + 100
-        elif min_index == 2:
-            return x3 + 45, window_top + 100
-        elif min_index == 3:
-            return x4 + 45, window_top + 100
-        else:
-            return None
+        left_top, right_bottom = result 
+        src = image[left_top[1]-10:left_top[1]+160,left_top[0]-282:left_top[0]+78]
+        width = 90
+        max_confidence = 0
+        max_id = 0
+        for i in range(4):
+            src_person = src[0:170, width*i:width*(i+1)]
+            confidence = jiance(src_person)
+            print("confidence: ", confidence)
+            if confidence > max_confidence:
+                max_confidence = confidence
+                max_id = i
+                
+        x_avg = int((left_top[0]-282) + width*(2*max_id+1)/2)
+        y_avg = int((left_top[1]-10) + 170/2)
+        return x_avg, y_avg
 
 
-def auto_do_verification(image):
-    detect_result = detect_verification_point(image)
-    if detect_result is not None:
-        click_x, click_y = detect_result
-        move_close_to(click_x+random.randint(-5, 5), click_y+random.randint(-5, 5))
-        move_and_click_in_game(click_x+random.randint(-5, 5), click_y+random.randint(-5, 5))
-        return True
+def auto_do_verification():
+    result = shot()
+    if result is not None:
+        image, left, top, right, bottom = result
+        detect_result = detect_verification_point(image)
+        if detect_result is not None:
+            click_x, click_y = detect_result
+            for try_i in range(10):
+                return_flag = do_mouse_action(click_x+random.randint(-5, 5), click_y+random.randint(-5, 5))
+                if return_flag:
+                    break
+            return True
     return False
 
 
 if __name__ == "__main__":
     model_load()
     load_popup_template()
+    images = os.listdir(r"E:\workspace\menghuanxiyou_outsourcing\scene_verification\xumi")
+    for image in images:
+        image_path = os.path.join(r"E:\workspace\menghuanxiyou_outsourcing\scene_verification\xumi", image)
+        pic = cv.imread(image_path)
+        result = detect_verification_point(pic)
+        if result is not None:
+            x_avg, y_avg = result
+            cv.circle(pic, (x_avg, y_avg), 2, (0, 0, 255), 2)
+            cv.imshow("show", pic)
+            cv.waitKey()
+        else:
+            print("ERROR: SEARCH FAILED!!")
+    '''
     picture = cv.imread('./senario_verification_catch/3.png')
     result1 = detect_verification_point(picture)
     if result1 is not None:
@@ -109,4 +123,4 @@ if __name__ == "__main__":
         cv.imshow("result", picture)
         cv.waitKey()
         cv.destroyAllWindows()
-    
+    '''

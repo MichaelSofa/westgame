@@ -3,8 +3,9 @@ import numpy as np
 import pydirectinput
 import random
 from match_template_func import get_coor
-from keymouse import move_close_to
-from keymouse import move_and_click_in_game
+from keymouse import do_mouse_action
+from shot_screen_func import shot
+import time
 
 red_dot_path = './auto_guide_template/red_dot.png'
 xumi_path = './auto_guide_template/xumi.png'
@@ -28,8 +29,12 @@ def load_guide_template():
     template_red_rot = cv.imread(red_dot_path, 0)
 
 
-def auto_guide(image):
+def auto_guide():
     global goal_index
+    result = shot()
+    if result is None:
+        return
+    image, left, top, right, bottom = result
     result_xumi = get_coor(image, template_xumi, 0.8)
     if result_xumi is None:
         pydirectinput.press('tab')
@@ -50,11 +55,11 @@ def auto_guide(image):
                     goal_index = 0
 
             if goal_index == 0:
-                move_close_to(real_goal_pt1[0]+random.randint(-6, 6), real_goal_pt1[1]+random.randint(-6, 6))
-                move_and_click_in_game(real_goal_pt1[0]+random.randint(-6, 6), real_goal_pt1[1]+random.randint(-6, 6))
+                time.sleep(random.random()*2)
+                do_mouse_action(real_goal_pt1[0]+random.randint(-6, 6), real_goal_pt1[1]+random.randint(-6, 6))
+                
             elif goal_index == 1:
-                move_close_to(real_goal_pt2[0]+random.randint(-6, 6), real_goal_pt2[1]+random.randint(-6, 6))
-                move_and_click_in_game(real_goal_pt2[0]+random.randint(-6, 6), real_goal_pt2[1]+random.randint(-6, 6))
-
+                time.sleep(random.random()*2)
+                do_mouse_action(real_goal_pt2[0]+random.randint(-6, 6), real_goal_pt2[1]+random.randint(-6, 6))
 
 

@@ -1,10 +1,12 @@
 import cv2 as cv
 import numpy as np
 import os
+import time
 import random
 from match_template_func import get_coor
-from keymouse import move_close_to
-from keymouse import move_and_click_in_game
+from keymouse import do_mouse_action, do_press_alt_key
+import pydirectinput
+from shot_screen_func import shot
 
 catch_path = "./catch"
 run_path = "./run"
@@ -130,33 +132,93 @@ def find_button(image, template_list):
             return left_top, right_bottom
         
 
-def process_one_battle_frame(image):
+def process_one_battle_frame(fight_flag=False):
+    result = shot()
+    if result is None:
+        return
+    image, left, top, right, bottom = result
     out_boxes, out_confidences, out_classIDs, out_centers = predict(net, image, yolo_labels)
     if len(out_centers) > 0:
-        result = find_button(image, template_catch_list)
+        result = find_button(image, template_catch_list)  # 人物抓宝宝
         if result is not None:
+            '''
             left_top, right_bottom = result
             center_x = int((left_top[0] + right_bottom[0])/2)
             center_y = int((left_top[1] + right_bottom[1])/2)
-            move_close_to(center_x+random.randint(-3, 3), center_y+random.randint(-3, 3))
-            move_and_click_in_game(center_x+random.randint(-3, 3), center_y+random.randint(-3, 3))
-            move_close_to(out_centers[0][0]+random.randint(-5, 5), out_centers[0][1]+random.randint(-5, 5))
-            move_and_click_in_game(out_centers[0][0]+random.randint(-5, 5), out_centers[0][1]+random.randint(-5, 5))
+            do_mouse_action(center_x+random.randint(-3, 3), center_y+random.randint(-3, 3))
+            '''
+            do_press_alt_key('g')
+            for try_i in range(10):
+                return_flag = do_mouse_action(out_centers[0][0]+random.randint(-5, 5), out_centers[0][1]+random.randint(-5, 5))
+                if return_flag:
+                    break
 
-    else:
-        result = find_button(image, template_run_list)
+        result = shot()  # 重新采图 宠物防御
         if result is not None:
-            left_top, right_bottom = result
-            center_x = int((left_top[0] + right_bottom[0])/2)
-            center_y = int((left_top[1] + right_bottom[1])/2)
-            move_close_to(center_x+random.randint(-3, 3), center_y+random.randint(-3, 3))
-            move_and_click_in_game(center_x+random.randint(-3, 3), center_y+random.randint(-3, 3))
+            image, left, top, right, bottom = result
+            result = find_buttom(image, template_run_list)
+            if result is not None:
+                do_press_alt_key('d')
+        
+    else:
+        if not fight_flag:  # escape
+            result = find_button(image, template_run_list)  # 人物逃跑
+            if result is not None:
+                left_top, right_bottom = result
+                center_x = int((left_top[0] + right_bottom[0])/2)
+                center_y = int((left_top[1] + right_bottom[1])/2)
+                for try_i in range(10):
+                    return_flag = do_mouse_action(center_x+random.randint(-3, 3), center_y+random.randint(-3, 3))
+                    if return_flag:
+                        break
+                        
+            result = shot()  # 重新采图 宠物逃跑
+            if result is not None:
+                image, left, top, right, bottom = result
+                result = find_button(image, template_run_list)  
+                if result is not None:
+                    left_top, right_bottom = result
+                    center_x = int((left_top[0] + right_bottom[0])/2)
+                    center_y = int((left_top[1] + right_bottom[1])/2)
+                    for try_i in range(10):
+                        return_flag = do_mouse_action(center_x+random.randint(-3, 3), center_y+random.randint(-3, 3))
+                        if return_flag:
+                            break
+                
+        else:  # fight
+            result = find_button(image, template_run_list)  # 识别逃跑按钮
+            if result is not None:
+                do_press_alt_key('q') # 人物自动施法
+            # 重新采图 宠物施法
+            result = shot()  # 重新采图 宠物攻击
+            if result is not None:
+                image, left, top, right, bottom = result
+                result = find_button(image, template_run_list)  
+                if result is not None:
+                    do_press_alt_key('q')  # 宠物自动施法
 
 
 if __name__ == "__main__":
+    '''
     video_path = './video/test6.mp4'
     cap = cv.VideoCapture(video_path)
     ret, frame = cap.read()
     while ret:
         process_one_battle_frame(frame)
+    '''
+    net_load()
+    COLORS = np.random.randint(0, 255, size=(len(yolo_labels), 3), dtype="uint8")
+    picture_path = r"C:\Users\HP\Desktop\aaa.jpg"
+    A = cv.imread(picture_path)
+    out_boxes, out_confidences, out_classIDs, out_centers = predict(net, A, yolo_labels)
+    for i in range(len(out_boxes)):
+        (x, y) = (out_boxes[i][0], out_boxes[i][1])
+        (w, h) = (out_boxes[i][2], out_boxes[i][3])
+        color = [int(c) for c in COLORS[out_classIDs[i]]]
+        cv.rectangle(A, (x, y), (x+w, y+h), color, 2)
+        text = "{}: {:.4f}".format(yolo_labels[out_classIDs[i]], out_confidences[i])
+        cv.putText(A, text, (x, y-5), cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)  # 字体风格、大小、颜色、粗细
+    cv.imshow("show", A)
+    cv.waitKey()
+    cv.closeAllWindows()
 
