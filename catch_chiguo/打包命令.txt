@@ -1,5 +1,5 @@
 打包命令:
-pyinstaller -F -w play.py -p auto_guide.py -p catch_chiguo.py -p check_battle_flag.py -p keymouse.py -p match_template_func.py -p senario_verification.py -p shot_screen_func.py --hidden-import cv2 --hidden-import numpy --hidden-import pydirectinput --hidden-import random --hidden-import os --hidden-import time --hidden-import sys --hidden-import tensorflow --hidden-import io --hidden-import PIL --hidden-import PyQt5 --hidden-import matplotlib --hidden-import skimage
+pyinstaller -F -w play.py -p blood_and_magic.py -p multi_window.py -p auto_guide.py -p catch_chiguo.py -p check_battle_flag.py -p keymouse.py -p match_template_func.py -p senario_verification.py -p shot_screen_func.py --hidden-import cv2 --hidden-import numpy --hidden-import pydirectinput --hidden-import random --hidden-import os --hidden-import time --hidden-import sys --hidden-import torch --hidden-import torchvision --hidden-import io --hidden-import PIL --hidden-import PyQt5 --hidden-import matplotlib --hidden-import skimage
 
 终止后台程序命令:
 taskkill /im play.exe /f

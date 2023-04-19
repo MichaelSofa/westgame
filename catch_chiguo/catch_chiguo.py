@@ -135,12 +135,19 @@ def find_button(image, template_list):
 def process_one_battle_frame(fight_flag=False):
     result = shot()
     if result is None:
-        return
+        return False
     image, left, top, right, bottom = result
     out_boxes, out_confidences, out_classIDs, out_centers = predict(net, image, yolo_labels)
+    ret_flag = False
     if len(out_centers) > 0:
+        time.sleep(0.5 + random.random()/5)
+        result = shot()
+        if result is None:
+            return False
+        image, left, top, right, bottom = result
         result = find_button(image, template_catch_list)  # 人物抓宝宝
         if result is not None:
+            ret_flag = True
             '''
             left_top, right_bottom = result
             center_x = int((left_top[0] + right_bottom[0])/2)
@@ -152,18 +159,24 @@ def process_one_battle_frame(fight_flag=False):
                 return_flag = do_mouse_action(out_centers[0][0]+random.randint(-5, 5), out_centers[0][1]+random.randint(-5, 5))
                 if return_flag:
                     break
+                if try_i == 9:
+                    pydirectinput.click()
+                    time.sleep(0.5+random.random()/5)
 
         result = shot()  # 重新采图 宠物防御
         if result is not None:
             image, left, top, right, bottom = result
-            result = find_buttom(image, template_run_list)
+            result = find_button(image, template_run_list)
             if result is not None:
+                ret_flag = True
                 do_press_alt_key('d')
+        return ret_flag
         
     else:
         if not fight_flag:  # escape
             result = find_button(image, template_run_list)  # 人物逃跑
             if result is not None:
+                ret_flag = True
                 left_top, right_bottom = result
                 center_x = int((left_top[0] + right_bottom[0])/2)
                 center_y = int((left_top[1] + right_bottom[1])/2)
@@ -177,6 +190,7 @@ def process_one_battle_frame(fight_flag=False):
                 image, left, top, right, bottom = result
                 result = find_button(image, template_run_list)  
                 if result is not None:
+                    ret_flag = True
                     left_top, right_bottom = result
                     center_x = int((left_top[0] + right_bottom[0])/2)
                     center_y = int((left_top[1] + right_bottom[1])/2)
@@ -184,10 +198,11 @@ def process_one_battle_frame(fight_flag=False):
                         return_flag = do_mouse_action(center_x+random.randint(-3, 3), center_y+random.randint(-3, 3))
                         if return_flag:
                             break
-                
+            return ret_flag
         else:  # fight
             result = find_button(image, template_run_list)  # 识别逃跑按钮
             if result is not None:
+                ret_flag = True
                 do_press_alt_key('q') # 人物自动施法
             # 重新采图 宠物施法
             result = shot()  # 重新采图 宠物攻击
@@ -195,8 +210,9 @@ def process_one_battle_frame(fight_flag=False):
                 image, left, top, right, bottom = result
                 result = find_button(image, template_run_list)  
                 if result is not None:
+                    ret_flag = True
                     do_press_alt_key('q')  # 宠物自动施法
-
+            return ret_flag
 
 if __name__ == "__main__":
     '''

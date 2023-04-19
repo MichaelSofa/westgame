@@ -66,6 +66,15 @@ def switch_window():
         new_window_point = points[new_index]
         do_windows_mouse_action(new_window_point[0]+random.randint(-5, 5), new_window_point[1]+random.randint(-2, 2))
 
+def window_amount():
+    result = shot()
+    if result is None:
+        return 0
+    image, left, top, right, bottom = result
+    points, this_index = multi_window_detect(image)
+    window_count = len(points)
+    return window_count
+
 
 if __name__ == "__main__":
     '''

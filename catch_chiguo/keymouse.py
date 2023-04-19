@@ -12,7 +12,7 @@ from shot_screen_func import shot
 from match_template_func import get_coor
 
 
-pydirectinput.PAUSE = random.random()/100
+pydirectinput.PAUSE = random.random()/50
 pydirectinput.FAILSAFE = False           # 启用自动防故障功能
 
 ## 鼠标形状偏移
@@ -34,7 +34,7 @@ def find_mouse_in_game(img, template):
 
 
 def move_and_click_in_game(x, y):  # 加入随机算法而不是直接直线移动
-    step = 5
+    step = 6
     result = shot()
     if result is not None:
         img, left, top, right, bottom = result
@@ -70,15 +70,17 @@ def move_and_click_in_game(x, y):  # 加入随机算法而不是直接直线移�
             print("not find the mouse! 2")
             return False
         else:
-            time.sleep(random.random()/100)
+            time.sleep(random.random()/3)
             pydirectinput.moveRel(x-mouse_result[0], y-mouse_result[1])
+            # print("mouse_x, mouse_y: {} {}".format(mouse_result[0], mouse_result[1]))
             time.sleep(random.random()/5)
             pydirectinput.click()
+            time.sleep(0.5+random.random()/5)
             return True
 
 
 def move_close_to(x, y):  # 加入随机算法的将鼠标移动靠近目标
-    step = 4
+    step = 6
     result = shot()
     if result is not None:
         img, left, top, right, bottom = result
@@ -101,6 +103,10 @@ def move_close_to(x, y):  # 加入随机算法的将鼠标移动靠近目标
         x_dist = x_dist - this_move_x
         y_dist = y_dist - this_move_y
     pydirectinput.moveRel(x_dist, y_dist)
+    x_mouse, y_mouse = pydirectinput.position()
+    x_mouse = x_mouse - left
+    y_mouse = y_mouse - top
+    pydirectinput.moveRel(x-x_mouse, y-y_mouse)
     return True
 
 
@@ -145,8 +151,10 @@ if __name__ == '__main__' :
     # pydirectinput.press("f12")
     # template_button = cv.imread(r"C:\Users\HP\Desktop\Screenshot 2023-04-16 093842.png", 0)
     # template_button = cv.imread(r"C:\Users\HP\Desktop\Screenshot 2023-04-16 093857.png", 0)
-    template_button = cv.imread(r"C:\Users\HP\Desktop\Screenshot 2023-04-16 101027.png", 0)
+    # template_button = cv.imread(r"C:\Users\HP\Desktop\Screenshot 2023-04-16 101027.png", 0)
+    template_button = cv.imread(r"C:\Users\HP\Desktop\xiuxi.png", 0)
     
+    time.sleep(2)
     result = shot()
     if result is not None:
         img, left, top, right, bottom = result

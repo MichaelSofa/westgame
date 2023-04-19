@@ -63,7 +63,6 @@ importlib-metadata        6.0.0
 importlib-resources       5.12.0
 itsdangerous              2.1.2
 Jinja2                    3.1.2
-joblib                    1.2.0
 jsonschema                4.17.3
 Keras-Applications        1.0.8
 Keras-Preprocessing       1.1.2
@@ -143,7 +142,6 @@ requests-oauthlib         1.3.1
 rfc3986                   1.5.0
 rsa                       4.9
 scikit-image              0.19.3
-scikit-learn              1.0.2
 scipy                     1.4.1
 setuptools                67.6.0
 shapely                   2.0.1
@@ -152,13 +150,11 @@ sniffio                   1.3.0
 starlette                 0.26.1
 sympy                     1.10.1
 tensorboard               2.1.1
+tensorflow-gpu            2.1.0
+tensorflow-gpu-estimator  2.1.0
 termcolor                 2.2.0
-threadpoolctl             3.1.0
 tifffile                  2021.11.2
 toolz                     0.12.0
-torch                     1.12.0+cpu
-torchaudio                0.12.0+cpu
-torchvision               0.13.0+cpu
 tqdm                      4.65.0
 tritonclient              2.31.0
 typing_extensions         4.5.0

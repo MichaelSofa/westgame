@@ -13,7 +13,7 @@ from senario_verification import auto_do_verification, model_load, load_popup_te
 from check_battle_flag import BattleClass
 from catch_chiguo import load_catch_and_run_template, net_load, process_one_battle_frame
 from auto_guide import auto_guide, load_guide_template
-from multi_window import to_primary_window, switch_window
+from multi_window import to_primary_window, switch_window, window_amount
 from blood_and_magic import do_auto_restore_blood_magic
 
 loop_flag = True
@@ -42,11 +42,13 @@ def main():
     battle_class.init_bar_vector()
     load_guide_template()
     keyboard.hook(change_loop_action)
+    need_check = False
     # 进入死循环
     while True:
         # 是否循环的判断
         if not loop_flag:
             continue
+        switch_flag = False
         # 截取一帧游戏图像
         result = shot()
         if result is None:
@@ -63,12 +65,19 @@ def main():
             if result:  # 处于场景验证状态
                 continue
             # 非场景验证状态
-            process_one_battle_frame(fight_flag)  # 抓宝宝或逃跑/抓宝宝或战斗
-            switch_window()  # 切换多开窗口功能
+            switch_flag = process_one_battle_frame(fight_flag)  # 抓宝宝或逃跑/抓宝宝或战斗
+            if switch_flag:
+                switch_window()  # 切换多开窗口功能
+                time.sleep(0.5+random.random())
 
         else:  # 处于非战斗状态加血加蓝或进行自动寻路
             if need_check:
-                do_auto_restore_blood_magic()  # 每个窗口的人物和宝宝分别检查和实现加血加蓝
+                if random.random() > 0.75:
+                    window_number = window_amount()
+                    for ii in range(window_number):
+                        do_auto_restore_blood_magic()  # 每个窗口的人物和宝宝分别检查和实现加血加蓝
+                        switch_window()
+                        time.sleep(0.5+random.random())                                                                 
                 need_check = False
             else:
                 to_primary_window()  # 确保处于第一个窗口，如果不在就点击到第一个窗口
@@ -77,3 +86,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+    """
+    window_number = window_amount()
+    for ii in range(window_number):
+        do_auto_restore_blood_magic()  # 每个窗口的人物和宝宝分别检查和实现加血加蓝
+        switch_window()
+        time.sleep(0.5+random.random())
+    """
